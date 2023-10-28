@@ -1,5 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include "hangman.h"
+#include <stdlib.h>
+
+// variaveis globais
+char palavrasecreta[20];
+char chutes[26];
+int chutes_dados = 0;
 
 void abertura()
 {
@@ -8,21 +16,21 @@ void abertura()
     printf("************************************\n\n");
 }
 
-void chuta(char chutes[26], int *tent)
+void chuta()
 {
     char chute;
     scanf(" %c", &chute);
 
-    chutes[(*tent)] = chute;
-    (*tent)++;
+    chutes[(chutes_dados)] = chute;
+    chutes_dados++;
 }
 
-int jachutou(char letra, char chutes[26], int tentativas)
+int jachutou(char letra)
 {
 
     int achou = 0;
 
-    for (int j = 0; j < tentativas; j++)
+    for (int j = 0; j < chutes_dados; j++)
     {
 
         if (chutes[j] == letra)
@@ -34,12 +42,12 @@ int jachutou(char letra, char chutes[26], int tentativas)
     return achou;
 }
 
-void desenhaforca(char palavrasecreta[20], char chutes[26], int tentativas)
+void desenhaforca()
 {
     for (int i = 0; i < strlen(palavrasecreta); i++)
     {
 
-        int achou = jachutou(palavrasecreta[i], chutes, tentativas);
+        int achou = jachutou(palavrasecreta[i]);
 
         if (achou)
         {
@@ -53,31 +61,112 @@ void desenhaforca(char palavrasecreta[20], char chutes[26], int tentativas)
     printf("\n");
 }
 
-void escolheparalavra(char palavrasecreta)
+void adicionapalavra()
 {
-    sprintf(palavrasecreta, "MELANCIA");
+
+    char quer;
+    printf("Voce seja adicionar um nova palavra no jogo ? (S/N)");
+    if (quer == "S")
+    {
+
+        char novapalavra[20];
+        printf("Qual a nova palavra? ");
+        scanf("%s", novapalavra);
+
+        FILE *f;
+
+        f = fopen("palavras.txt", "r+");
+        if (f == 0)
+        {
+            printf("Desculpe, banco de dados não disponivel\n\n");
+            exit(1);
+        }
+
+        int qtd;
+        fscanf(f, "%d", &qtd);
+        qtd++;
+
+        fseek(f, 0, SEEK_SET);
+        fprintf(f, "%d", qtd);
+
+        fseek(f, 0, SEEK_END);
+        fprintf(f, "\n%s", novapalavra);
+        fclose(f);
+    }
+}
+
+void escolheparalavra()
+{
+    FILE *f;
+    f = fopen("palavras.txt", "r");
+
+    if (f == 0)
+    {
+        printf("Desculpe, banco de dados não disponivel\n\n");
+        exit(1);
+    }
+
+    int qtddepalavras;
+    fscanf(f, "%d", &qtddepalavras);
+
+    srand(time(0));
+    int randomico = rand() % qtddepalavras;
+
+    for (int i = 0; i <= randomico; i++)
+    {
+        fscanf(f, "%s", palavrasecreta);
+    }
+
+    fclose(f);
+}
+
+int acertou()
+{
+    for (int i = 0; i < strlen(palavrasecreta); i++)
+    {
+        if (!jachutou(palavrasecreta[i]))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int enforcou()
+{
+
+    int erros = 0;
+    for (int i = 0; i < chutes_dados; i++)
+    {
+        int existe = 0;
+
+        for (int j = 0; j < strlen(palavrasecreta); j++)
+        {
+            if (chutes[i] == palavrasecreta[j])
+            {
+                existe = 1;
+                break;
+            }
+        }
+        if (!existe)
+            erros++;
+    }
+    return erros >= 5;
 }
 
 int main()
 {
 
-    char palavrasecreta[20];
-    sprintf(palavrasecreta, "MELANCIA");
-
-    int acertou = 0;
-    int enforcou = 0;
-
-    char chutes[26];
-    int tentativas = 0;
-
-    escolheparalavra(palavrasecreta);
+    escolheparalavra();
     abertura();
 
     do
     {
 
-        desenhaforca(palavrasecreta, chutes, tentativas);
-        chuta(chutes, &tentativas);
+        desenhaforca();
+        chuta();
 
-    } while (!acertou && !enforcou);
+    } while (!acertou() && !enforcou());
+
+    adicionapalavra();
 }
