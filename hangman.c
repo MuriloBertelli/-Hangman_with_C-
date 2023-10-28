@@ -3,9 +3,10 @@
 #include <time.h>
 #include "hangman.h"
 #include <stdlib.h>
+#define TAMANHO_PALAVRA 20;
 
 // variaveis globais
-char palavrasecreta[20];
+char palavrasecreta[TAMANHO_PALAVRA];
 char chutes[26];
 int chutes_dados = 0;
 
@@ -43,7 +44,18 @@ int jachutou(char letra)
 }
 
 void desenhaforca()
+
 {
+    printf("  _______      \n");
+    printf(" |/      |     \n");
+    printf(" |      (_)    \n");
+    printf(" |      \\|/   \n");
+    printf(" |       |     \n");
+    printf(" |      / \\   \n");
+    printf(" |             \n");
+    printf("_|___          \n");
+    printf("\n\n");
+
     for (int i = 0; i < strlen(palavrasecreta); i++)
     {
 
@@ -69,7 +81,7 @@ void adicionapalavra()
     if (quer == "S")
     {
 
-        char novapalavra[20];
+        char novapalavra[TAMANHO_PALAVRA];
         printf("Qual a nova palavra? ");
         scanf("%s", novapalavra);
 
@@ -167,6 +179,15 @@ int main()
         chuta();
 
     } while (!acertou() && !enforcou());
+
+    if (acertou())
+    {
+        printf("Parabens, voce nao e um perdedor");
+    }
+    else
+    {
+        printf("Voce perdeu");
+    }
 
     adicionapalavra();
 }
