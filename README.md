@@ -1,21 +1,21 @@
 # Hangman_with_C
 
-Jogo da forca (Hangman) em C — projeto feito durante o curso.  
-Este repositório contém o código fonte em C para o jogo, instruções de compilação e sugestões de melhorias.
+Jogo da Forca (Hangman) em C — versão refatorada, segura e modular.
 
-## Como compilar
+## O que está aqui
+- `src/hangman.c`  -> implementação do jogo (usa `words.txt`)
+- `words.txt`      -> lista de palavras (uma por linha)
+- `Makefile`       -> compila o projeto e gera `bin/hangman`
+- `.gitignore`     -> para ignorar binários e arquivos temporários
 
-Use o `Makefile` incluído (compila todos os `.c` recursivamente e coloca os binários em `bin/`):
+## Como compilar e executar
 
 ```bash
-# compila todos
+# compilar
 make
 
-# compila em modo debug
+# executar
+make run
+
+# compilar em modo debug
 make debug
-
-# lista fontes e binários gerados
-make list
-
-# executa (exemplo)
-make run NAME=path/to/program_without_.c
